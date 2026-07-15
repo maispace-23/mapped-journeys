@@ -1,5 +1,7 @@
+import MapView from "./components/Map/Map";
+
 function App() {
-  return <h1>Strava Hiking Map</h1>;
+  return <MapView />;
 }
 
 export default App;
