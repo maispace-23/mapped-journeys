@@ -1,47 +1,34 @@
 import Map from "react-map-gl/maplibre";
 import { Source, Layer } from "react-map-gl/maplibre";
-import "maplibre-gl/dist/maplibre-gl.css";
 import { decodePolyline } from "../../utils/polyline";
 import { stravaData } from "../../services/stravaTempData";
 import { getPolylines } from "../../utils/extractPolylines";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 const polylines = getPolylines(stravaData);
 
-const coordinates = decodePolyline(polylines[0]);
-
-const mapCoordinates = coordinates.map(([lat, lng]) => [lng, lat]);
-
-const demoTrail = {
+const allTrails = {
   type: "FeatureCollection",
-  features: [
-    {
+  features: polylines.map((polyline: string) => {
+    const coordinates = decodePolyline(polyline);
+
+    const mapCoordinates = coordinates.map(([lat, lng]) => [lng, lat]);
+
+    return {
       type: "Feature",
       geometry: {
         type: "LineString",
         coordinates: mapCoordinates,
       },
-    },
-  ],
-};
-
-const trails = {
-  type: "FeatureCollection",
-  features: [
-    polylines.map((polyline: string) => ({
-      type: "Feature",
-      geometry: {
-        type: "LineString",
-        coordinates: decodePolyline(polyline),
-      },
-    })),
-  ],
+    };
+  }),
 };
 
 const trailLayer = {
   id: "trail",
   type: "line",
   paint: {
-    "line-color": "#ff0000",
+    "line-color": "#001eff",
     "line-width": 5,
   },
 };
@@ -60,10 +47,7 @@ const MapView = () => {
       }}
       mapStyle="https://tiles.openfreemap.org/styles/bright"
     >
-      {/* <Source id="trail" type="geojson" data={trail}>
-        <Layer {...trailLayer} />
-      </Source> */}
-      <Source id="trail" type="geojson" data={demoTrail}>
+      <Source id="trail" type="geojson" data={allTrails}>
         <Layer {...trailLayer} />
       </Source>
     </Map>
